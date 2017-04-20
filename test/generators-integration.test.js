@@ -1,8 +1,9 @@
 const test = require('ava')
 const execa = require('execa')
 const jetpack = require('fs-jetpack')
+const nodeWhich = require('which')
 
-const IGNITE = 'ignite'
+const IGNITE = nodeWhich('ignite')
 const APP = 'IntegrationTest'
 
 test.before(async t => {
@@ -12,8 +13,14 @@ test.before(async t => {
 })
 
 test.serial('generates a component', async t => {
-  const x = await execa(IGNITE, ['g', 'component', 'Test'], { preferLocal: false })
-  console.log(x)
+  try {
+    console.log(`i am in ${process.cwd()}`)
+    console.log(`ignite/ignite.json is ${jetpack.exists('ignite/ignite.json')}`)
+    const x = await execa(IGNITE, ['g', 'component', 'Test'], { preferLocal: false })
+    console.log(x)
+  } catch (err) {
+    console.log(err)
+  }
   t.is(jetpack.exists('App/Components/Test.js'), 'file')
   t.is(jetpack.exists('App/Components/Styles/TestStyle.js'), 'file')
   const lint = await execa('npm', ['-s', 'run', 'lint'])
