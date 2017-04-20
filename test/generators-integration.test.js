@@ -3,7 +3,7 @@ const execa = require('execa')
 const jetpack = require('fs-jetpack')
 const nodeWhich = require('which')
 
-const IGNITE = nodeWhich('ignite')
+const IGNITE = nodeWhich.sync('ignite')
 const APP = 'IntegrationTest'
 
 test.before(async t => {
