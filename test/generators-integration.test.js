@@ -7,11 +7,14 @@ const APP = 'IntegrationTest'
 
 test.before(async t => {
   jetpack.remove(APP)
-  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`], { preferLocal: false })
+  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`])
+  console.log(process.cwd())
   process.chdir(APP)
+  console.log(process.cwd())
 })
 
 test.serial('generates a component', async t => {
+  console.log(process.cwd())
   await execa(IGNITE, ['g', 'component', 'Test'], { preferLocal: false })
   t.is(jetpack.exists('App/Components/Test.js'), 'file')
   t.is(jetpack.exists('App/Components/Styles/TestStyle.js'), 'file')
@@ -20,6 +23,7 @@ test.serial('generates a component', async t => {
 })
 
 test.serial('generate listview of type row works', async t => {
+  console.log(process.cwd())
   await execa(IGNITE, ['g', 'listview', 'TestRow', '--type=Row'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/TestRow.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/TestRowStyle.js'), 'file')
