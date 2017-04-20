@@ -4,7 +4,6 @@ import styles from './Styles/DrawerContentStyles'
 import { Images } from '../Themes'
 
 class DrawerContent extends Component {
-
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', () => {
       if (this.context.drawer.props.open) {
@@ -26,7 +25,6 @@ class DrawerContent extends Component {
       </ScrollView>
     )
   }
-
 }
 
 DrawerContent.contextTypes = {
