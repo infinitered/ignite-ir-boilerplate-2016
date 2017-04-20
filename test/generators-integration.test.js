@@ -7,7 +7,7 @@ const APP = 'IntegrationTest'
 
 test.before(async t => {
   jetpack.remove(APP)
-  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`])
+  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`], { preferLocal: false })
   process.chdir(APP)
 })
 
