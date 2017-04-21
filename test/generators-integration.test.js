@@ -7,7 +7,8 @@ const IGNITE = nodeWhich.sync('ignite')
 const APP = 'IntegrationTest'
 
 test.before(async t => {
-  jetpack.remove(APP)
+  jetpack.remove(`tmp`)
+  process.chdir('tmp')
   await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`])
   process.chdir(APP)
 })
@@ -82,6 +83,6 @@ test.serial('generate screen works', async t => {
 })
 
 test.after.always('clean up all generated items', t => {
-  process.chdir('../')
-  jetpack.remove(APP)
+  process.chdir('../..')
+  jetpack.remove('tmp')
 })
