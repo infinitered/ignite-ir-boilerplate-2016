@@ -82,6 +82,16 @@ async function install (context) {
     .spin(`using the ${print.colors.red('Infinite Red 2016')} boilerplate`)
     .succeed()
 
+  // --max, --min, interactive
+  let answers
+  if (parameters.options.max) {
+    answers = options.answers.max
+  } else if (parameters.options.min) {
+    answers = options.answers.min
+  } else {
+    answers = await prompt.ask(options.questions)
+  }
+
   // attempt to install React Native or die trying
   const rnInstall = await reactNative.install({ name, skipJest: true })
   if (rnInstall.exitCode > 0) process.exit(rnInstall.exitCode)
@@ -93,10 +103,12 @@ async function install (context) {
   spinner.text = '▸ copying files'
   spinner.start()
   filesystem.copy(`${__dirname}/boilerplate/App`, `${process.cwd()}/App`, {
-    overwrite: true
+    overwrite: true,
+    matching: '!*.ejs'
   })
   filesystem.copy(`${__dirname}/boilerplate/Tests`, `${process.cwd()}/Tests`, {
-    overwrite: true
+    overwrite: true,
+    matching: '!*.ejs'
   })
   spinner.stop()
 
@@ -111,12 +123,19 @@ async function install (context) {
     {
       template: 'App/Config/AppConfig.js.ejs',
       target: 'App/Config/AppConfig.js'
+    },
+    {
+      template: 'Tests/Setup.js.ejs',
+      target: 'Tests/Setup.js'
     }
   ]
   const templateProps = {
     name,
     igniteVersion: ignite.version,
-    reactNativeVersion: rnInstall.version
+    reactNativeVersion: rnInstall.version,
+    vectorIcons: answers['vector-icons'],
+    animatable: answers['animatable'],
+    i18n: answers['i18n']
   }
   await ignite.copyBatch(context, templates, templateProps, {
     quiet: true,
@@ -167,16 +186,6 @@ async function install (context) {
   await mergePackageJsons()
 
   spinner.stop()
-
-  // --max, --min, interactive
-  let answers
-  if (parameters.options.max) {
-    answers = options.answers.max
-  } else if (parameters.options.min) {
-    answers = options.answers.min
-  } else {
-    answers = await prompt.ask(options.questions)
-  }
 
   spinner.text = '▸ installing ignite dependencies'
   spinner.start()
