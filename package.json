@@ -22,8 +22,8 @@
   },
   "scripts": {
     "lint": "standard",
-    "test": "ava --concurrency=1",
-    "watch": "ava --watch",
+    "test": "ava -s --concurrency=1",
+    "watch": "ava -s --watch",
     "coverage": "nyc ava",
     "shipit": "np"
   },
