@@ -10,7 +10,8 @@ test.before(async t => {
   jetpack.remove(`tmp`)
   jetpack.dir('tmp')
   process.chdir('tmp')
-  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`])
+  const x = await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`], { preferLocal: false, stdio: 'inherit', shell: true })
+  console.log(x)
   process.chdir(APP)
 })
 
