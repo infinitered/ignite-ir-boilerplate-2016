@@ -13,16 +13,17 @@ module.exports = async function (context) {
   }
 
   const name = pascalCase(parameters.first)
-  const props = { name }
+  const screenName = name.endsWith('Screen') ? name : `${name}Screen`
+  const props = { name: screenName }
 
   const jobs = [
     {
       template: `screen.ejs`,
-      target: `App/Containers/${name}Screen.js`
+      target: `App/Containers/${screenName}.js`
     },
     {
       template: `screen-style.ejs`,
-      target: `App/Containers/Styles/${name}ScreenStyle.js`
+      target: `App/Containers/Styles/${screenName}Style.js`
     }
   ]
 
