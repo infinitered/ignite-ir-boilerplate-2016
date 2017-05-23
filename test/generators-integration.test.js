@@ -1,25 +1,36 @@
 const test = require('ava')
 const execa = require('execa')
 const jetpack = require('fs-jetpack')
+const nodeWhich = require('which')
 
-const IGNITE = 'ignite'
+const IGNITE = nodeWhich.sync('ignite')
 const APP = 'IntegrationTest'
 
 test.before(async t => {
-  jetpack.remove(APP)
-  await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--boilerplate', `${__dirname}/..`])
+  jetpack.remove(`tmp`)
+  jetpack.dir('tmp')
+  process.chdir('tmp')
+  const x = await execa(IGNITE, ['new', APP, '--min', '--skip-git', '--npm', '--boilerplate', `${__dirname}/..`], { preferLocal: false, stdio: 'inherit', shell: true })
+  console.log(x)
   process.chdir(APP)
 })
 
-test('generates a component', async t => {
-  await execa(IGNITE, ['g', 'component', 'Test'], { preferLocal: false })
+test.serial('generates a component', async t => {
+  try {
+    console.log(`i am in ${process.cwd()}`)
+    console.log(`ignite/ignite.json is ${jetpack.exists('ignite/ignite.json')}`)
+    const x = await execa(IGNITE, ['g', 'component', 'Test'], { preferLocal: false })
+    console.log(x)
+  } catch (err) {
+    console.log(err)
+  }
   t.is(jetpack.exists('App/Components/Test.js'), 'file')
   t.is(jetpack.exists('App/Components/Styles/TestStyle.js'), 'file')
   const lint = await execa('npm', ['-s', 'run', 'lint'])
   t.is(lint.stderr, '')
 })
 
-test('generate listview of type row works', async t => {
+test.serial('generate listview of type row works', async t => {
   await execa(IGNITE, ['g', 'listview', 'TestRow', '--type=Row'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/TestRow.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/TestRowStyle.js'), 'file')
@@ -27,7 +38,7 @@ test('generate listview of type row works', async t => {
   t.is(lint.stderr, '')
 })
 
-test('generate listview of type sections works', async t => {
+test.serial('generate listview of type sections works', async t => {
   await execa(IGNITE, ['g', 'listview', 'TestSection', '--type=WithSections'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/TestSection.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/TestSectionStyle.js'), 'file')
@@ -35,7 +46,7 @@ test('generate listview of type sections works', async t => {
   t.is(lint.stderr, '')
 })
 
-test('generate listview of type grid works', async t => {
+test.serial('generate listview of type grid works', async t => {
   await execa(IGNITE, ['g', 'listview', 'TestGrid', '--type=Grid'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/TestGrid.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/TestGridStyle.js'), 'file')
@@ -43,14 +54,14 @@ test('generate listview of type grid works', async t => {
   t.is(lint.stderr, '')
 })
 
-test('generate redux works', async t => {
+test.serial('generate redux works', async t => {
   await execa(IGNITE, ['g', 'redux', 'Test'], { preferLocal: false })
   t.is(jetpack.exists('App/Redux/TestRedux.js'), 'file')
   const lint = await execa('npm', ['run', 'lint'])
   t.is(lint.stderr, '')
 })
 
-test('generate container works', async t => {
+test.serial('generate container works', async t => {
   await execa(IGNITE, ['g', 'container', 'Container'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/Container.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/ContainerStyle.js'), 'file')
@@ -58,14 +69,14 @@ test('generate container works', async t => {
   t.is(lint.stderr, '')
 })
 
-test('generate saga works', async t => {
+test.serial('generate saga works', async t => {
   await execa(IGNITE, ['g', 'saga', 'Test'], { preferLocal: false })
   t.is(jetpack.exists('App/Sagas/TestSagas.js'), 'file')
   const lint = await execa('npm', ['run', 'lint'])
   t.is(lint.stderr, '')
 })
 
-test('generate screen works', async t => {
+test.serial('generate screen works', async t => {
   await execa(IGNITE, ['g', 'screen', 'Test'], { preferLocal: false })
   t.is(jetpack.exists('App/Containers/TestScreen.js'), 'file')
   t.is(jetpack.exists('App/Containers/Styles/TestScreenStyle.js'), 'file')
@@ -74,6 +85,6 @@ test('generate screen works', async t => {
 })
 
 test.after.always('clean up all generated items', t => {
-  process.chdir('../')
-  jetpack.remove(APP)
+  process.chdir('../..')
+  jetpack.remove('tmp')
 })
